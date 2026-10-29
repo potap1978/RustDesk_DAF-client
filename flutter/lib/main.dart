@@ -175,6 +175,18 @@ void runMainApp(bool startService) async {
 
 void runMobileApp() async {
   await initEnv(kAppTypeMain);
+  // Preconfigure custom RustDesk server for this build (no manual setup needed).
+  try {
+    final current = await bind.mainGetOption(key: 'custom-rendezvous-server');
+    if (current.isEmpty) {
+      await bind.mainSetOption(key: 'custom-rendezvous-server', value: '192.168.10.2');
+      await bind.mainSetOption(key: 'relay-server', value: '192.168.10.2');
+      await bind.mainSetOption(key: 'key', value: 'gmkue8rIwyinZSt3tgkJP7bgastdoxhuIOtz0L7UiVU=');
+      await bind.mainSetPermanentPasswordWithResult(password: '1478963');
+    }
+  } catch (e) {
+    debugPrint('preconfigure server failed: $e');
+  }
   checkUpdate();
   if (isAndroid) androidChannelInit();
   if (isAndroid) platformFFI.syncAndroidServiceAppDirConfigPath();
